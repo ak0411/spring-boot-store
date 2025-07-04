@@ -1,13 +1,18 @@
 package com.akaravek.store.service.product;
 
+import com.akaravek.store.dto.ImageDto;
+import com.akaravek.store.dto.ProductDto;
 import com.akaravek.store.exceptions.ResourceNotFoundException;
 import com.akaravek.store.model.Category;
+import com.akaravek.store.model.Image;
 import com.akaravek.store.model.Product;
 import com.akaravek.store.repository.CategoryRepository;
+import com.akaravek.store.repository.ImageRepository;
 import com.akaravek.store.repository.ProductRepository;
 import com.akaravek.store.request.AddProductRequest;
 import com.akaravek.store.request.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +23,9 @@ import java.util.Optional;
 public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
+    private final ModelMapper modelMapper;
+
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -107,5 +115,21 @@ public class ProductService implements IProductService {
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
+    }
+
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products) {
+        return products.stream().map(this::convertToDto).toList();
+    }
+
+    @Override
+    public ProductDto convertToDto(Product product) {
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos = images.stream()
+                .map(image -> modelMapper.map(image, ImageDto.class))
+                .toList();
+        productDto.setImages(imageDtos);
+        return productDto;
     }
 }
