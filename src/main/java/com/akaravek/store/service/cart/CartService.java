@@ -17,7 +17,7 @@ public class CartService implements ICartService {
     private final CartItemRepository cartItemRepository;
 
     @Override
-    public Cart getCart(Long id) {
+    public Cart getCartById(Long id) {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
         BigDecimal totalAmount = cart.getTotalAmount();
         cart.setTotalAmount(totalAmount);
@@ -25,8 +25,8 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public void clearCart(Long id) {
-        Cart cart = this.getCart(id);
+    public void clearCartById(Long id) {
+        Cart cart = this.getCartById(id);
         cartItemRepository.deleteAllByCartId(id);
         cart.getItems().clear();
         cartRepository.deleteById(id);
@@ -34,7 +34,7 @@ public class CartService implements ICartService {
 
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        Cart cart = this.getCart(id);
+        Cart cart = this.getCartById(id);
         return cart.getTotalAmount();
     }
 }

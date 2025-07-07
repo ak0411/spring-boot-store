@@ -5,7 +5,7 @@ import com.akaravek.store.model.Cart;
 import java.math.BigDecimal;
 
 public interface ICartService {
-    Cart getCart(Long id);
-    void clearCart(Long id);
+    Cart getCartById(Long id);
+    void clearCartById(Long id);
     BigDecimal  getTotalPrice(Long id);
 }
